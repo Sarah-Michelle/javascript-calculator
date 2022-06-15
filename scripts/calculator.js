@@ -18,33 +18,39 @@ let subtract = (number1, number2) => number1 - number2;
 let multiply = (number1, number2) => number1 * number2;
 let divide = (number1, number2) => number1 / number2;
 
-document.addEventListener('keypress', (button) => {
+document.addEventListener('keydown', (button) => {
+    let availableOperations = ['+', '-', '/', '*', '.', 'Enter'];
     let value = button.key;
-    switch (value) {
-        case '+':
-            handleOperator(value);
-            break;
-        case '-':
-            handleOperator(value);
-            break;
-        case '*':
-            handleOperator(value);
-            break;
-        case '/':
-            handleOperator(value);
-            break;
-        case '=':
-            handleOperator(value);
-            break;
-        case '.':
-            inputDecimal(value);
-            break;
-        default:
-            // check if the key is an integer
-            if (Number.isInteger(parseFloat(value))) {
-                inputDigit(value);
-            }
+
+    if (Number.isInteger(parseFloat(value))) {
+        inputDigit(value);
     }
+
+    if (availableOperations.includes(value)) {
+        if(value === 'Enter'){
+            handleOperator('=');
+        }else if(value === '.'){
+            inputDecimal();
+            // updateDisplay();
+        }else{
+            handleOperator(value);
+        }
+        updateDisplay();
+    }
+
+    if(value === '.'){
+        inputDecimal();
+        updateDisplay();
+    }
+
+    if(value === 'Backspace' || value === 'Delete'){
+        deleteNum();
+    }
+
+    if(value === 'Escape'){
+        clear();
+    }
+
     updateDisplay();
 });
 
@@ -63,7 +69,7 @@ operatorButtons.forEach((button) => {
 });
 
 decimalButton.addEventListener('click', button => {
-    inputDecimal('.');
+    inputDecimal();
     updateDisplay();
 });
 
@@ -136,7 +142,7 @@ function handleOperator(nextOperator) {
         firstNum = inputValue;
     }
     else if (operator) {
-        const result = operate(operator, firstNum, inputValue);    
+        const result = operate(operator, firstNum, inputValue);
         displayTextValue = `${parseFloat(result.toFixed(7))}`;
         firstNum = result;
     }
