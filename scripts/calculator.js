@@ -31,7 +31,6 @@ document.addEventListener('keydown', (button) => {
             handleOperator('=');
         }else if(value === '.'){
             inputDecimal();
-            // updateDisplay();
         }else{
             handleOperator(value);
         }
@@ -40,7 +39,6 @@ document.addEventListener('keydown', (button) => {
 
     if(value === '.'){
         inputDecimal();
-        updateDisplay();
     }
 
     if(value === 'Backspace' || value === 'Delete'){
