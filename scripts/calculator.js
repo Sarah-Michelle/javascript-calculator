@@ -11,6 +11,7 @@ let displayTextValue = '';
 let currentNum = null;
 let firstNum = null;
 let isFirstInput = false;
+let isNegativeNumber = false;
 
 let add = (number1, number2) => number1 + number2;
 let subtract = (number1, number2) => number1 - number2;
@@ -57,6 +58,7 @@ numberButtons.forEach((button) => {
 
 operatorButtons.forEach((button) => {
     button.addEventListener('click', () => {
+        inputNegativeDigit();
         handleOperator(button.innerText);
         updateDisplay();
     });
@@ -85,8 +87,9 @@ function inputDigit(num) {
     if (isFirstInput === true) {
         displayTextValue = num;
         isFirstInput = false;
-    } else {
-        if (num === '0' && displayTextValue === '') { 
+    } 
+    else {
+        if (num === '0' && displayTextValue === '') {
             displayTextValue = num;
         }
         else {
@@ -95,28 +98,41 @@ function inputDigit(num) {
     }
 }
 
+//disable decimal button if 'dot' symbol is added
 function inputDecimal() {
     if (isFirstInput === true) {
         displayTextValue = '0.';
         isFirstInput = false;
         decimalButton.disabled = true;
         return;
-    } 
+    }
 
-    if(!displayTextValue.includes('.')){
+    if (!displayTextValue.includes('.')) {
         decimalButton.disabled = false;
         displayTextValue += '.';
     }
-    else{
+    else {
         decimalButton.disabled = true;
     }
-    
+
 }
 
+function inputNegativeDigit() {
+    if (isFirstInput === true) {
+        displayTextValue += '-';
+        isFirstInput = false;
+        isNegativeNumber = true;
+        return;
+    }
+}
+
+//updates display with new display text value
 function updateDisplay() {
     displayValueContainer.innerText = displayTextValue;
 }
 
+// remove last number in character string
+// display to user
 function deleteNum() {
     displayTextValue = displayTextValue.slice(0, -1);
     currentNum = displayTextValue;
@@ -137,15 +153,16 @@ function handleOperator(nextOperator) {
     // is not a `NaN` value
     if (firstNum == null && !isNaN(inputValue)) {
         firstNum = inputValue;
-    } else if (operator || nextOperator === '=') {
-        const result = operate(operator, firstNum, inputValue);
+    } 
+    else if (operator || nextOperator === '=') {
+        let result = operate(operator, firstNum, inputValue);
 
-        if(nextOperator === '/'){
+        if (nextOperator === '/') {
             displayTextValue = 'Cannot divide by 0';
         }
 
         //rounds long decimal numbers 
-        if(!Number.isInteger(result)){
+        if (!Number.isInteger(result)) {
             let roundedNum = result.toFixed(7);
             displayTextValue = roundedNum.toString();
         }
@@ -170,12 +187,7 @@ function operate(operator, number1, number2) {
             return multiply(number1, number2);
             break;
         case '/':
-            if (number2 === 0) {
-                return 'Cannot divide by 0';
-            }
-            else {
-                return divide(number1, number2);
-            }
+            return divide(number1, number2);
             break;
         default:
             break;
@@ -184,12 +196,14 @@ function operate(operator, number1, number2) {
     return number2;
 }
 
+// reset everything to default 
 function clear() {
     operator = null;
     displayTextValue = '';
     currentNum = null;
     firstNum = null;
     isSecondInput = false;
+    decimalButton.disabled = false;
 }
 
 
