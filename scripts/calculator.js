@@ -45,7 +45,6 @@ document.addEventListener('keypress', (button) => {
                 inputDigit(value);
             }
     }
-
     updateDisplay();
 });
 
@@ -114,7 +113,6 @@ function inputDecimal() {
     else {
         decimalButton.disabled = true;
     }
-
 }
 
 //updates display with new display text value
