@@ -85,14 +85,9 @@ function inputDigit(num) {
     if (isFirstInput === true) {
         displayTextValue = num;
         isFirstInput = false;
-    } 
+    }
     else {
-        if (num === '0' && displayTextValue === '') {
-            num;
-        }
-        else {
-            displayTextValue += num.toString();
-        }
+        displayValueContainer.innerText = displayTextValue === '0' ? num : displayTextValue += num;
     }
 }
 
@@ -137,17 +132,12 @@ function handleOperator(nextOperator) {
 
     // verify that 'firstNum' is null and that the `inputValue`
     // is not a `NaN` value
-    if (firstNum == null && !isNaN(inputValue)) {
+    if (firstNum === null && !isNaN(inputValue)) {
         firstNum = inputValue;
-    } 
-    else if (operator || nextOperator === '=') {
-        let result = operate(operator, firstNum, inputValue);
-
-        if (nextOperator === '/') {
-            displayTextValue = 'Cannot divide by 0';
-        }
-
-        displayTextValue = result.toString();
+    }
+    else if (operator) {
+        const result = operate(operator, firstNum, inputValue);    
+        displayTextValue = `${parseFloat(result.toFixed(7))}`;
         firstNum = result;
     }
 
@@ -167,10 +157,12 @@ function operate(operator, number1, number2) {
             return multiply(number1, number2);
             break;
         case '/':
-            if(number2 == '0'){
-                return 'Cannot divide by 0';
+            if (number2 === 0) {
+                return displayValueContainer.innerText = 'Cannot divide by 0';
             }
-            return divide(number1, number2);
+            else {
+                return divide(number1, number2);
+            }
             break;
         default:
             break;
