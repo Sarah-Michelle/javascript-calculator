@@ -3,125 +3,207 @@ const operatorButtons = document.querySelectorAll('#operator-button');
 const clearButton = document.querySelector('#clear-button');
 const deleteButton = document.querySelector('#delete-button');
 const equalsButton = document.querySelector('#equal-button');
-const displayValue = document.querySelector('.display-value');
+const decimalButton = document.querySelector('#decimal-button');
+const displayValueContainer = document.querySelector('.display-value');
 
-let operand = '';
+let operator = '';
 let displayTextValue = '';
-let currentNum = '';
-let prevNum = '';
-let isSecondInput = false;
+let currentNum = null;
+let firstNum = null;
+let isFirstInput = false;
 
-function add(number1, number2) {
-    return number1 + number2;
-}
+let add = (number1, number2) => number1 + number2;
+let subtract = (number1, number2) => number1 - number2;
+let multiply = (number1, number2) => number1 * number2;
+let divide = (number1, number2) => number1 / number2;
 
-function subtract(number1, number2) {
-    return number1 - number2;
-}
+document.addEventListener('keypress', (button) => {
+    // let buttonName = button.key;
 
-function multiply(number1, number2) {
-    return number1 * number2;
-}
+    // if(isFinite(buttonName)){
+    //     console.log(buttonName);
+    //     inputDigit(buttonName);
+    // }
 
-function divide(number1, number2) {
-    return number1 / number2;
-}
+    let value = button.key;
 
-function operate(operator, number1, number2) {
-    let value;
-    switch (operator) {
-        case '+':
-            value = add(parseFloat(number1), parseFloat(number2));
-            break;
-        case '-':
-            value = subtract(parseFloat(number1), parseFloat(number2));
-            break;
-        case '*':
-            value = multiply(parseFloat(number1), parseFloat(number2));
-            break;
-        case '/':
-            value = divide(parseFloat(number1), parseFloat(number2));
-            break;
-        default:
-            value = 0;
-            break;
+    if (!button.matches('button')) {
+        return;
     }
 
-    displayTextValue = value;
-    displayValue.innerText = displayTextValue;
-    currentNum = value;
-}
-
-function buttonFunctionality() {
-    numberButtons.forEach((button) => {
-        button.addEventListener('click', () => {
-            appendToNumber(button.innerText);
-            updateDisplay();
-        });
-    });
-
-    operatorButtons.forEach((button) => {
-        button.addEventListener('click', () => {
-            // if(currentNum == 0){
-            //     operand
-            // }
-            if (!isSecondInput) {
-                prevNum = parseFloat(currentNum);
-                operand = button.innerText;
-                currentNum = '';
-                isSecondInput = true;
+    switch (value) {
+        case '+':
+        case '-':
+        case '*':
+        case '/':
+        case '=':
+            handleOperator(value);
+            break;
+        case '.':
+            inputDecimal(value);
+            break;
+        case 'all-clear':
+            resetCalculator();
+            break;
+        default:
+            // check if the key is an integer
+            if (Number.isInteger(parseFloat(value))) {
+                inputDigit(value);
             }
-            else {
-                isSecondInput = false;
-                operand = button.innerText;
-                operate(operand, prevNum, currentNum);
-                return;
-            }
-        });
-    });
+    }
 
-    clearButton.addEventListener('click', button => {
-        clear();
-    });
-
-    equalsButton.addEventListener('click', button => {
-        console.log(prevNum);
-        console.log(currentNum);
-        operate(operand, prevNum, currentNum);
-    });
-
-    deleteButton.addEventListener('click', button => {
-        deleteNum();
-    });
-}
-
-function clear() {
-    prevNum = 0;
-    currentNum = 0;
-    operand = '';
-    displayTextValue = '';
-    isSecondInput = false;
     updateDisplay();
+});
+
+numberButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+        inputDigit(button.innerText);
+        updateDisplay();
+    });
+});
+
+operatorButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+        handleOperator(button.innerText);
+        updateDisplay();
+    });
+});
+
+decimalButton.addEventListener('click', button => {
+    inputDecimal('.');
+    updateDisplay();
+});
+
+deleteButton.addEventListener('click', button => {
+    deleteNum();
+});
+
+clearButton.addEventListener('click', button => {
+    clear();
+    updateDisplay();
+});
+
+equalsButton.addEventListener('click', button => {
+    handleOperator(button.innerText);
+    updateDisplay();
+});
+
+function inputDigit(num) {
+    if (isFirstInput === true) {
+        displayTextValue = num;
+        isFirstInput = false;
+    } else {
+        if (num === '0' && displayTextValue === '') { 
+            displayTextValue = num;
+        }
+        else {
+            displayTextValue += num.toString();
+        }
+    }
+}
+
+function inputDecimal() {
+    if (isFirstInput === true) {
+        displayTextValue = '0.';
+        isFirstInput = false;
+        decimalButton.disabled = true;
+        return;
+    } 
+
+    if(!displayTextValue.includes('.')){
+        decimalButton.disabled = false;
+        displayTextValue += '.';
+    }
+    else{
+        decimalButton.disabled = true;
+    }
+    
+}
+
+function updateDisplay() {
+    displayValueContainer.innerText = displayTextValue;
 }
 
 function deleteNum() {
     displayTextValue = displayTextValue.slice(0, -1);
     currentNum = displayTextValue;
-    displayValue.innerText = displayTextValue;
+    displayValueContainer.innerText = displayTextValue;
 }
 
-function appendToNumber(num) {
-    currentNum += num.toString();
-}
+function handleOperator(nextOperator) {
+    const inputValue = parseFloat(displayTextValue);
 
-function updateDisplay() {
-    if (currentNum == '') {
-        displayTextValue = 0;
-    } else {
-        displayTextValue = currentNum;
+    //overwrite previous operator if 2 operators were inputted consecutively
+    if (operator && isFirstInput) {
+        operator = nextOperator;
+        console.log(operator);
+        return;
     }
 
-    displayValue.innerText = displayTextValue;
+    // verify that 'firstNum' is null and that the `inputValue`
+    // is not a `NaN` value
+    if (firstNum == null && !isNaN(inputValue)) {
+        firstNum = inputValue;
+    } else if (operator || nextOperator === '=') {
+        const result = operate(operator, firstNum, inputValue);
+
+        if(nextOperator === '/'){
+            displayTextValue = 'Cannot divide by 0';
+        }
+        //rounds long decimal numbers 
+        // if(!Number.isInteger(result)){
+        //     if(operator == '/'){
+        //         displayTextValue = 'Cannot divide by 0';
+        //     }else{
+        //         displayTextValue = (result.toFixed(7)).toString();
+        //     } 
+        // }
+
+        displayTextValue = result.toString();
+        firstNum = result;
+    }
+
+    isFirstInput = true;
+    operator = nextOperator;
 }
 
-buttonFunctionality();
+function operate(operator, number1, number2) {
+    switch (operator) {
+        case '+':
+            return add(number1, number2);
+            break;
+        case '-':
+            return subtract(number1, number2);
+            break;
+        case '*':
+            return multiply(number1, number2);
+            break;
+        case '/':
+            if (number2 === 0) {
+                return 'Cannot divide by 0';
+            }
+            else {
+                return divide(number1, number2);
+            }
+            break;
+        default:
+            break;
+    }
+
+    return number2;
+}
+
+function clear() {
+    operator = null;
+    displayTextValue = '';
+    currentNum = null;
+    firstNum = null;
+    isSecondInput = false;
+}
+
+
+
+
+
+
+
