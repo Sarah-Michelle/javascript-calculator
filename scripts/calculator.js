@@ -88,7 +88,7 @@ function inputDigit(num) {
     } 
     else {
         if (num === '0' && displayTextValue === '') {
-            displayTextValue = num;
+            num;
         }
         else {
             displayTextValue += num.toString();
