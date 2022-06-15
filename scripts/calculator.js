@@ -195,10 +195,3 @@ function clear() {
     isSecondInput = false;
     decimalButton.disabled = false;
 }
-
-
-
-
-
-
-
