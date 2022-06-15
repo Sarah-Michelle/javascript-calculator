@@ -117,15 +117,6 @@ function inputDecimal() {
 
 }
 
-function inputNegativeDigit() {
-    if (isFirstInput === true) {
-        displayTextValue += '-';
-        isFirstInput = false;
-        isNegativeNumber = true;
-        return;
-    }
-}
-
 //updates display with new display text value
 function updateDisplay() {
     displayValueContainer.innerText = displayTextValue;
@@ -135,7 +126,6 @@ function updateDisplay() {
 // display to user
 function deleteNum() {
     displayTextValue = displayTextValue.slice(0, -1);
-    currentNum = displayTextValue;
     displayValueContainer.innerText = displayTextValue;
 }
 
