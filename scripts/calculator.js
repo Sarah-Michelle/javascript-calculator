@@ -127,13 +127,11 @@ function deleteNum() {
 }
 
 function handleOperator(nextOperator) {
-    console.log(displayTextValue);
     const inputValue = parseFloat(displayTextValue);
 
     //overwrite previous operator if 2 operators were inputted consecutively
     if (operator && isFirstInput) {
         operator = nextOperator;
-        console.log(operator);
         return;
     }
 
@@ -147,12 +145,6 @@ function handleOperator(nextOperator) {
 
         if (nextOperator === '/') {
             displayTextValue = 'Cannot divide by 0';
-        }
-
-        //rounds long decimal numbers 
-        if (!Number.isInteger(result)) {
-            let roundedNum = result.toFixed(7);
-            displayTextValue = roundedNum.toString();
         }
 
         displayTextValue = result.toString();
@@ -175,6 +167,9 @@ function operate(operator, number1, number2) {
             return multiply(number1, number2);
             break;
         case '/':
+            if(number2 == '0'){
+                return 'Cannot divide by 0';
+            }
             return divide(number1, number2);
             break;
         default:
@@ -190,6 +185,6 @@ function clear() {
     displayTextValue = '';
     currentNum = null;
     firstNum = null;
-    isSecondInput = false;
+    isFirstInput = false;
     decimalButton.disabled = false;
 }
