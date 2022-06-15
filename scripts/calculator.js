@@ -18,32 +18,25 @@ let multiply = (number1, number2) => number1 * number2;
 let divide = (number1, number2) => number1 / number2;
 
 document.addEventListener('keypress', (button) => {
-    // let buttonName = button.key;
-
-    // if(isFinite(buttonName)){
-    //     console.log(buttonName);
-    //     inputDigit(buttonName);
-    // }
-
     let value = button.key;
-
-    if (!button.matches('button')) {
-        return;
-    }
-
     switch (value) {
         case '+':
+            handleOperator(value);
+            break;
         case '-':
+            handleOperator(value);
+            break;
         case '*':
+            handleOperator(value);
+            break;
         case '/':
+            handleOperator(value);
+            break;
         case '=':
             handleOperator(value);
             break;
         case '.':
             inputDecimal(value);
-            break;
-        case 'all-clear':
-            resetCalculator();
             break;
         default:
             // check if the key is an integer
@@ -150,14 +143,12 @@ function handleOperator(nextOperator) {
         if(nextOperator === '/'){
             displayTextValue = 'Cannot divide by 0';
         }
+
         //rounds long decimal numbers 
-        // if(!Number.isInteger(result)){
-        //     if(operator == '/'){
-        //         displayTextValue = 'Cannot divide by 0';
-        //     }else{
-        //         displayTextValue = (result.toFixed(7)).toString();
-        //     } 
-        // }
+        if(!Number.isInteger(result)){
+            let roundedNum = result.toFixed(7);
+            displayTextValue = roundedNum.toString();
+        }
 
         displayTextValue = result.toString();
         firstNum = result;
