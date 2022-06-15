@@ -57,7 +57,6 @@ numberButtons.forEach((button) => {
 
 operatorButtons.forEach((button) => {
     button.addEventListener('click', () => {
-        inputNegativeDigit();
         handleOperator(button.innerText);
         updateDisplay();
     });
@@ -128,6 +127,7 @@ function deleteNum() {
 }
 
 function handleOperator(nextOperator) {
+    console.log(displayTextValue);
     const inputValue = parseFloat(displayTextValue);
 
     //overwrite previous operator if 2 operators were inputted consecutively
